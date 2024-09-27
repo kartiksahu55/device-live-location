@@ -14,12 +14,16 @@ const io = new Server(server);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+io.on("connection", (socket) => {
+  console.log("connected");
+});
+
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
-  res.send("Hello Kartik");
+  res.render("index");
 });
 
 export default server;
