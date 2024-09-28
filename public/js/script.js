@@ -2,23 +2,25 @@ const socket = io();
 
 let [lat, lng] = [0, 0];
 
-if (navigator.geolocation) {
-  navigator.geolocation.watchPosition((position) => {
-    const { latitude, longitude } = position.coords;
+(async() => {
+  if (navigator.geolocation) {
+    await navigator.geolocation.watchPosition((position) => {
+      const { latitude, longitude } = position.coords;
 
-    [lat, lng] = [latitude, longitude]
+      [lat, lng] = [latitude, longitude];
 
-    socket.emit("send-location", { latitude, longitude });
-  }),
-    (error) => {
-      console.error(error);
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maxAge: 0,
-    };
-}
+      socket.emit("send-location", { latitude, longitude });
+    }),
+      (error) => {
+        console.error(error);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maxAge: 0,
+      };
+  }
+})();
 
 const map = L.map("map").setView([lat, lng], 1);
 
