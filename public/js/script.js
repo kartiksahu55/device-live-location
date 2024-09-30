@@ -4,7 +4,7 @@ if (navigator.geolocation) {
   navigator.geolocation.watchPosition((position) => {
     const { latitude, longitude } = position.coords;
 
-    [lat, lng] = [latitude, longitude];
+    console.log("lat: "+latitude, "lng: "+longitude);
 
     const map = L.map("map").setView([latitude, longitude], 16);
 
