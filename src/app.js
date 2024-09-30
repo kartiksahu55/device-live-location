@@ -14,12 +14,12 @@ const io = new Server(server);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// io.on("connection", (socket) => {
-//     console.log("Connected")
-//     socket.on("send-location", (data) => {
-//       socket.emit("receive-location", { id: socket.id, ...data });
-//     });
-//   });
+io.on("connection", (socket) => {
+    console.log("Connected")
+    socket.on("send-location", (data) => {
+      socket.emit("receive-location", { id: socket.id, ...data });
+    });
+  });
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.set("views", path.join(__dirname, "../views"));
