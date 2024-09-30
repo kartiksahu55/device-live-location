@@ -1,50 +1,55 @@
 const socket = io();
 
-let [lat, lng] = [0, 0];
+if (navigator.geolocation) {
+  navigator.geolocation.watchPosition((position) => {
+    const { latitude, longitude } = position.coords;
 
-(async() => {
-  if (navigator.geolocation) {
-    await navigator.geolocation.watchPosition((position) => {
-      const { latitude, longitude } = position.coords;
+    [lat, lng] = [latitude, longitude];
 
-      [lat, lng] = [latitude, longitude];
+    const map = L.map("map").setView([latitude, longitude], 16);
 
-      socket.emit("send-location", { latitude, longitude });
-    }),
-      (error) => {
-        console.error(error);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maxAge: 0,
-      };
-  }
-})();
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "Kartik (Frontend Developer)",
+    }).addTo(map);
+    L.marker([latitude, longitude]).addTo(map);
 
-const map = L.map("map").setView([lat, lng], 1);
+    socket.emit("send-location", { latitude, longitude });
+  }),
+    (error) => {
+      console.error(error);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maxAge: 0,
+    };
+}
 
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution: "Kartik (Frontend Developer)",
-}).addTo(map);
+// const map = L.map("map").setView([lat, lng], 1);
 
-const marker = {};
+// console.log(lat, lng);
 
-socket.on("receive-location", (data) => {
-  const { id, latitude, longitude } = data;
+// L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+//   attribution: "Kartik (Frontend Developer)",
+// }).addTo(map);
 
-  map.setView([lat, lng], 16);
+// const marker = {};
 
-  if (marker[id]) {
-    marker[id].setlatLng([lat, lng]);
-  } else {
-    marker[id] = L.marker([lat, lng]).addTo(map);
-  }
-});
+// socket.on("receive-location", (data) => {
+//   const { id, latitude, longitude } = data;
 
-socket.on("user-disconnected", (id) => {
-  if (marker[id]) {
-    map.removeLayer(marker[id]);
-    delete marker[id];
-  }
-});
+//   map.setView([latitude, longitude], 16);
+
+//   if (marker[id]) {
+//     marker[id].setlatLng([latitude, longitude]);
+//   } else {
+//     marker[id] = L.marker([latitude, longitude]).addTo(map);
+//   }
+// });
+
+// socket.on("user-disconnected", (id) => {
+//   if (marker[id]) {
+//     map.removeLayer(marker[id]);
+//     delete marker[id];
+//   }
+// });
